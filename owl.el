@@ -54,10 +54,10 @@
 (defvar owl-warning-face 'owl-warning-face)
 
 (defvar owl-mode-map
-  "mode map for owl mode"
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map lisp-mode-shared-map)
-    map))
+    map)
+  "mode map for owl mode")
 
 (easy-menu-define owl-mode-menu owl-mode-map
   "Menu for Owl Lisp mode."
