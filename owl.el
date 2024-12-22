@@ -33,13 +33,25 @@
 ;;; Commentary:
 
 ;; this is a tiny major mode for editing Owl Lisp.
-;; it was written mainly to add some keyword highlighting and indent-function thing
+;; it was written mainly to add some keyword highlighting (the ones i like :3)
+;; and indent-function thing
+;;
 ;; also sorry for overwriting scheme-indent-function with lets and tuple-case etc
 ;; but whateVer lol
 
 ;;; Code:
 
 (require 'scheme)
+
+(defface owl-warning-face
+  `((((class color) (background light))
+     (:foreground "Orange"))
+    (((class color) (background dark))
+     (:foreground "Orange"))
+    (t :weight bold))
+  "Face used to highlight keywords you probably shouldn't maybe touch? idk??.")
+
+(defvar owl-warning-face 'owl-warning-face)
 
 (defvar owl-mode-map
   "mode map for owl mode"
@@ -79,13 +91,40 @@
      (concat
       "("
       (regexp-opt
-       '("lets" "if-lets" "tuple-case"
+       '(;; let-like
+         "lets" "if-lets" "tuple-case" "lets/cc"
+         ;; fasl stuff
+         "fasl-encode" "fasl-decode" "fasl-save" "fasl-load"
+         ;; etc
+         "call/cc2" "call/cc3"
          ) t)
       "\\>")
-     1))))
+     1)
+    (cons
+     (concat
+      "("
+      (regexp-opt
+       '("thread" "mail" "error" "interact" "accept-mail"
+         "wait-mail" "next-mail" "check-mail" "kill" "link" "thunk->thread"
+         "exit-owl" "exit-thread" "fork-named"
+         ) t)
+      "\\>")
+     '(1 font-lock-builtin-face))
+    (cons
+     (concat
+      "("
+      (regexp-opt
+       '(;; should you really be doing that?
+         "run" "set-ticker" "bind" "mkt" "halt" "set-memory-limit"
+         "get-word-size" "get-memory-limit" "sys-prim"
+         ) t)
+      "\\>")
+     '(1 owl-warning-face))
+    )))
 
 (put 'lets 'scheme-indent-function 1)
 (put 'if-lets 'scheme-indent-function 1)
+(put 'lets/cc 'scheme-indent-function 1)
 (put 'tuple-case 'scheme-indent-function 2)
 
 (provide 'owl)
