@@ -1,1 +1,3 @@
 Major mode for editing Owl Lisp files.
+
+owl.el can be installed from kelp.krzysckh.org or manually.
