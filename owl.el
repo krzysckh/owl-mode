@@ -127,6 +127,8 @@
 (put 'lets/cc 'scheme-indent-function 1)
 (put 'tuple-case 'scheme-indent-function 2)
 
+(defalias 'owl-lisp-mode 'owl-mode)
+
 (provide 'owl)
 
 ;;; owl.el ends here
