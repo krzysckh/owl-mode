@@ -92,7 +92,7 @@
       "("
       (regexp-opt
        '(;; let-like
-         "lets" "if-lets" "tuple-case" "lets/cc"
+         "lets" "if-lets" "tuple-case" "lets/cc" "pipe" "piper"
          ;; fasl stuff
          "fasl-encode" "fasl-decode" "fasl-save" "fasl-load"
          ;; etc
@@ -125,6 +125,8 @@
 (put 'lets 'scheme-indent-function 1)
 (put 'if-lets 'scheme-indent-function 1)
 (put 'lets/cc 'scheme-indent-function 1)
+(put 'pipe 'scheme-indent-function 1)
+(put 'piper 'scheme-indent-function 1)
 (put 'tuple-case 'scheme-indent-function 2)
 
 (defalias 'owl-lisp-mode 'owl-mode)
