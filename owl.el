@@ -127,7 +127,7 @@
 (put 'lets/cc 'scheme-indent-function 1)
 (put 'pipe 'scheme-indent-function 1)
 (put 'piper 'scheme-indent-function 1)
-(put 'tuple-case 'scheme-indent-function 2)
+(put 'tuple-case 'scheme-indent-function 1)
 
 (defalias 'owl-lisp-mode 'owl-mode)
 
