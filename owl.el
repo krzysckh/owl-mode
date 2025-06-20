@@ -81,9 +81,8 @@
         (cond ((or (eq method 'defun)
                    (and (null method)
                         (> (length function) 3)
-                        (or
-                         (string-match "\\`with" function)
-                         (string-match "\\`def" function))))
+                        (string-match "\\`def" function))
+                   (string-match "\\`with" function))
                (lisp-indent-defform state indent-point))
               ((integerp method)
                (lisp-indent-specform method state
