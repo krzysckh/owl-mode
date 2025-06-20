@@ -34,10 +34,6 @@
 
 ;; this is a tiny major mode for editing Owl Lisp.
 ;; it was written mainly to add some keyword highlighting (the ones i like :3)
-;; and indent-function thing
-;;
-;; also sorry for overwriting scheme-indent-function with lets and tuple-case etc
-;; but whateVer lol
 
 ;;; Code:
 
@@ -59,6 +55,42 @@
     map)
   "mode map for owl mode")
 
+;; this mostly duplicates scheme-indent-function
+;; which mostly duplicates lisp-indent-function
+(defun owl-indent-function (indent-point state)
+  (let ((normal-indent (current-column)))
+    (goto-char (1+ (elt state 1)))
+    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+    (if (and (elt state 2)
+             (not (looking-at "\\sw\\|\\s_")))
+        (progn
+          (if (not (> (save-excursion (forward-line 1) (point))
+                      calculate-lisp-indent-last-sexp))
+              (progn (goto-char calculate-lisp-indent-last-sexp)
+                     (beginning-of-line)
+                     (parse-partial-sexp (point)
+                                         calculate-lisp-indent-last-sexp 0 t)))
+          (backward-prefix-chars)
+          (current-column))
+      (let ((function (buffer-substring (point)
+                                        (progn (forward-sexp 1) (point))))
+            method)
+        (setq method (or (get (intern-soft function) 'scheme-indent-function)
+                         (get (intern-soft function) 'owl-indent-function)
+                         (get (intern-soft function) 'scheme-indent-hook)))
+        (cond ((or (eq method 'defun)
+                   (and (null method)
+                        (> (length function) 3)
+                        (or
+                         (string-match "\\`with" function)
+                         (string-match "\\`def" function))))
+               (lisp-indent-defform state indent-point))
+              ((integerp method)
+               (lisp-indent-specform method state
+                                     indent-point normal-indent))
+              (method
+                (funcall method state indent-point normal-indent)))))))
+
 (easy-menu-define owl-mode-menu owl-mode-map
   "Menu for Owl Lisp mode."
   '("Owl Lisp"
@@ -67,11 +99,13 @@
 
 (define-derived-mode owl-mode scheme-mode "Owl Lisp"
   "Mode for editing Owl Lisp code."
-  (setq font-lock-defaults
-        '((owl-font-lock-keywords)
-          nil t (("+-*/.<>=!?$%_&~^:" . "w") (?#. "w 14"))
-          beginning-of-defun
-          (font-lock-mark-block-function . mark-defun))))
+  (progn
+    (setq-local lisp-indent-function 'owl-indent-function)
+    (setq font-lock-defaults
+          '((owl-font-lock-keywords)
+            nil t (("+-*/.<>=!?$%_&~^:" . "w") (?#. "w 14"))
+            beginning-of-defun
+            (font-lock-mark-block-function . mark-defun)))))
 
 (defgroup owl nil
   "Editing Owl Lisp code."
@@ -120,14 +154,17 @@
          ) t)
       "\\>")
      '(1 owl-warning-face))
+    (cons "(\\(with\\(?:-[^ ]+\\)?\\)\\>" 1)
+    (cons "(\\(define[^ ]+\\)\\>" 1)
+    ;; (cons "(\\([^ ]+!\\)\\>" '(1 owl-warning-face)) ; <- TODO: is this nice or too much?
     )))
 
-(put 'lets 'scheme-indent-function 1)
-(put 'if-lets 'scheme-indent-function 1)
-(put 'lets/cc 'scheme-indent-function 1)
-(put 'pipe 'scheme-indent-function 1)
-(put 'piper 'scheme-indent-function 1)
-(put 'tuple-case 'scheme-indent-function 1)
+(put 'lets 'owl-indent-function 1)
+(put 'if-lets 'owl-indent-function 1)
+(put 'lets/cc 'owl-indent-function 1)
+(put 'pipe 'owl-indent-function 1)
+(put 'piper 'owl-indent-function 1)
+(put 'tuple-case 'owl-indent-function 1)
 
 (defalias 'owl-lisp-mode 'owl-mode)
 
