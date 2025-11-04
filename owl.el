@@ -129,7 +129,7 @@
          ;; fasl stuff
          "fasl-encode" "fasl-decode" "fasl-save" "fasl-load"
          ;; etc
-         "call/cc2" "call/cc3"
+         "call/cc2" "call/cc3" "force-ll"
          ) t)
       "\\>")
      1)
